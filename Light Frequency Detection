@@ -1,0 +1,66 @@
+import cv2
+from google.colab.patches import cv2_imshow
+
+# Load the video
+
+# video_file = "path/to/video/file.mp4"
+# cap = cv2.VideoCapture(video_file)
+
+cap = cv2.VideoCapture('/content/IMG_3635.mov')
+
+
+# Define ROI
+x, y, w, h = 450, 900, 400, 400
+
+# Initialize variables
+frame_count = 0
+prev_led_state = 0
+on_off_count = 0
+
+first = True
+while True:
+    # Read a frame
+    ret, frame = cap.read()
+    if not ret:
+        break
+    
+    # Crop ROI
+    # roi = frame[y:y+h, x:x+w]
+    roi = frame[:, :]
+    # print(frame.shape)
+    
+    # Convert to grayscale
+    gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
+    
+    # Apply thresholding
+    _, thresh = cv2.threshold(gray, 225, 255, cv2.THRESH_BINARY)
+    
+    # cv2_imshow('video2', frame)
+
+    if first:
+      first = False
+      cv2_imshow(gray)
+
+    cv2_imshow(gray)
+
+    # Count non-zero pixels
+    led_state = cv2.countNonZero(thresh)
+    print(led_state)
+    
+    # Count on/off cycles
+    if prev_led_state == 0 and led_state > 0:
+        on_off_count += 1
+    
+    prev_led_state = led_state
+    frame_count += 1
+    
+    
+# Calculate frequency
+total_time = frame_count / cap.get(cv2.CAP_PROP_FPS)
+freq = on_off_count / total_time
+
+print(f"Blinking frequency: {freq} Hz")
+
+# Release resources
+cap.release()
+cv2.destroyAllWindows()
