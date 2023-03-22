@@ -1,5 +1,4 @@
 import cv2
-from google.colab.patches import cv2_imshow
 
 # Load the video
 
@@ -39,9 +38,9 @@ while True:
 
     if first:
       first = False
-      cv2_imshow(gray)
+      cv2.imshow(gray)
 
-    cv2_imshow(gray)
+    cv2.imshow(gray)
 
     # Count non-zero pixels
     led_state = cv2.countNonZero(thresh)
